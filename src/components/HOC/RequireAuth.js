@@ -1,15 +1,22 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-export default ComposedComponent => {
+export default function RequireAuth(ChildComponent) {
   class RequireAuthentication extends Component {
     componentWillMount() {
       // Here, we want to check to see if `this.props.authenticated` is true
       // If it isn't, then redirect the user back to the /signin page
+      if (!localStorage.getItem("authorization")) {
+        this.props.history.push("/signin");
+      }
     }
 
     render() {
-      return <div />;
+      const toker = localStorage.getItem("authorization");
+      if (toker) {
+        return <ChildComponent />;
+      }
+      return null;
       // Here, check to see if `this.props.authenticated` is true
       // If it isn't, then we don't want this component to return anything
       // Else, render the component that was passed to this higher-order component
@@ -23,4 +30,4 @@ export default ComposedComponent => {
   };
 
   return connect(mapStateToProps)(RequireAuthentication);
-};
+}
